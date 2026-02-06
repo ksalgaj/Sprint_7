@@ -22,7 +22,7 @@ class TestGetTrack:
         response = api_client.get_track(track_id="")
 
         assert response.status_code == 400
-        assert "message" in response.json()
+        assert response.json().get("message") == "Недостаточно данных для поиска"
 
     @allure.title("Ошибка при запросе несуществующего заказа")
     @allure.description("Проверка, что при запросе с несуществующим track возвращается ошибка")
@@ -30,5 +30,5 @@ class TestGetTrack:
         response = api_client.get_track(track_id=NONEXISTENT_TRACK)
 
         assert response.status_code == 404
-        assert "message" in response.json()
+        assert response.json().get("message") == "Заказ не найден"
         

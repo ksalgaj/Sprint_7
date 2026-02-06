@@ -2,6 +2,7 @@ import pytest
 import json
 import allure
 from api_client.client import APIClient
+from test_data import ORDER_PAYLOAD
 
 @allure.feature("Создание заказа")
 @allure.story("POST /orders")
@@ -19,17 +20,10 @@ class TestCreateOrder:
             ]
     )
     def test_create_order_with_different_colors(self, api_client: APIClient, color_payload):
-        payload = {
-            "firstName": "Мария",
-            "lastName": "Иванова",
-            "address": "Москва",
-            "metroStation": 5,
-            "phone": "+7 903 333 333",
-            "rentTime": 5,
-            "deliveryDate": "2026-05-30",
-            "comment": "Позвонить перед доставкой",
-            **color_payload
-        }
+
+        payload = ORDER_PAYLOAD.copy()
+        payload.pop("color", None)
+        payload.update(color_payload)
 
         response = api_client.create_order(json.dumps(payload))
 

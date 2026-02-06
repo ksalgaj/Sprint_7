@@ -9,7 +9,7 @@ class TestCreateCourier:
 
     @allure.title("Успешное создание курьера")
     @allure.description("Проверка, что курьер создаётся при передаче всех обязательных полей")
-    def test_create_courier_success(self, api_client: APIClient, generate_random_string):
+    def test_create_courier_success(self, api_client: APIClient, generate_random_string, login_and_delete_courier):
         payload = {
             "login": generate_random_string(10),
             "password": generate_random_string(10),
@@ -21,6 +21,13 @@ class TestCreateCourier:
         assert response.status_code == 201
         assert response.json() == {"ok": True}
 
+        courier = login_and_delete_courier({
+            "login": payload["login"],
+            "password": payload["password"]
+        })
+
+        assert "id" in courier
+
     @allure.title("Нельзя создать двух одинаковых курьеров")
     @allure.description("Проверка ошибки при создании курьера с уже существующим логином")
     def test_create_duplicate_courier(self, api_client: APIClient, registered_courier):
@@ -28,7 +35,7 @@ class TestCreateCourier:
         response = api_client.create_courier(registered_courier)
 
         assert response.status_code == 409
-        assert "message" in response.json()
+        assert response.json().get("message") == "Этот логин уже используется. Попробуйте другой."
 
     @allure.title("Ошибка при отсутствии обязательного поля")
     @allure.description("Проверка, что без login или password курьер не создаётся")
@@ -45,5 +52,5 @@ class TestCreateCourier:
         response = api_client.create_courier(payload)
 
         assert response.status_code == 400
-        assert "message" in response.json()
+        assert response.json().get("message") == "Недостаточно данных для создания учетной записи"
 

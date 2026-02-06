@@ -23,7 +23,7 @@ class TestDeleteCourier:
         response = api_client.delete_courier(id="")
 
         assert response.status_code == 404
-        assert "message" in response.json()
+        assert response.json().get("message") == "Not Found."
 
     @allure.title("Ошибка при удалении несуществующего курьера")
     @allure.description("Проверка, что при передаче несуществующего id возвращается ошибка")
@@ -32,6 +32,6 @@ class TestDeleteCourier:
         response = api_client.delete_courier(id=INVALID_COURIER_ID)
 
         assert response.status_code == 404
-        assert "message" in response.json()
+        assert response.json().get("message") == "Курьера с таким id нет."
 
 

@@ -15,7 +15,7 @@ class TestAcceptOrders:
 
         assert response.status_code == 200
         assert response.json() == {"ok":True}
-
+        
     @allure.title("Ошибка принятия заказа при отсутствие courierId")
     @allure.description("Если не передан id курьера, API возвращает 400 с сообщением об ошибке")
     def test_accept_order_missing_courier_id(self, api_client: APIClient, created_order):
@@ -23,7 +23,7 @@ class TestAcceptOrders:
         response = api_client.accept_orders(order_id, None)
 
         assert response.status_code == 400
-        assert "message" in response.json()
+        assert response.json().get("message") == "Недостаточно данных для поиска"
 
     @allure.title("Ошибка при неверном courierId")
     @allure.description("Если передан неверный id курьера, API возвращает 404 с сообщением")
@@ -33,6 +33,7 @@ class TestAcceptOrders:
         
         assert response.status_code == 404
         assert "message" in response.json()
+        assert response.json().get("message") == "Курьера с таким id не существует"
 
     @allure.title("Ошибка при отсутствии orderId")
     @allure.description("Если не передан id заказа, но передан courierId, API возвращает 400 с сообщением")
@@ -40,7 +41,7 @@ class TestAcceptOrders:
        response = api_client.accept_order_without_order_id(registered_courier["id"])
        
        assert response.status_code == 400 
-       assert "message" in response.json()
+       assert response.json().get("message") == "Недостаточно данных для поиска"
 
     @allure.title("Ошибка при неверном orderId")
     @allure.description("Если передан неверный id заказа, API возвращает 404 с сообщением")
@@ -48,5 +49,5 @@ class TestAcceptOrders:
        response = api_client.accept_orders(order_id=INVALID_ORDER_ID, courier_id=registered_courier["id"])
 
        assert response.status_code == 404
-       assert "message" in response.json()
+       assert response.json().get("message") == "Заказа с таким id не существует"
        

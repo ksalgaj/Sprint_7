@@ -33,7 +33,7 @@ class TestLoginCourier:
         response = api_client.login_courier(payload)
 
         assert response.status_code == 400
-        assert "message" in response.json()
+        assert response.json().get("message") == "Недостаточно данных для входа"
 
     @allure.title("Ошибка авторизации несуществующего курьера")
     @allure.description("Проверка, что авторизация под несуществующим пользователем возвращает ошибку")
@@ -46,7 +46,7 @@ class TestLoginCourier:
         response = api_client.login_courier(payload)
 
         assert response.status_code == 404
-        assert "message" in response.json()
+        assert response.json().get("message") == "Учетная запись не найдена"
 
     @allure.title("Ошибка авторизации при неверных логине или пароле")
     @allure.description("Проверка, что при передаче неверных логина или пароля возвращается ошибка")
@@ -59,4 +59,4 @@ class TestLoginCourier:
         for payload in test_cases:
             response = api_client.login_courier(payload)
             assert response.status_code == 404
-            assert "message" in response.json()
+            assert response.json().get("message") == "Учетная запись не найдена"
