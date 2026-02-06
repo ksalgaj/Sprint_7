@@ -1,10 +1,14 @@
 import pytest
 import json
+import allure
 from api_client.client import APIClient
 
-
+@allure.feature("Создание заказа")
+@allure.story("POST /orders")
 class TestCreateOrder:
 
+    @allure.title("Создание заказа с разными вариантами цвета")
+    @allure.description("Проверка, что заказ можно создать с одним цветом, двумя цветами или без указания цвета. В ответе должен возвращаться track.")
     @pytest.mark.parametrize(
             "color_payload", 
             [

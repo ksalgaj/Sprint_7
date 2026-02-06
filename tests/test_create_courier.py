@@ -1,8 +1,14 @@
 import pytest
+import allure
 from api_client.client import APIClient
 
+
+@allure.feature("Создание курьера")
+@allure.story("POST /courier")
 class TestCreateCourier:
 
+    @allure.title("Успешное создание курьера")
+    @allure.description("Проверка, что курьер создаётся при передаче всех обязательных полей")
     def test_create_courier_success(self, api_client: APIClient, generate_random_string):
         payload = {
             "login": generate_random_string(10),
@@ -15,6 +21,8 @@ class TestCreateCourier:
         assert response.status_code == 201
         assert response.json() == {"ok": True}
 
+    @allure.title("Нельзя создать двух одинаковых курьеров")
+    @allure.description("Проверка ошибки при создании курьера с уже существующим логином")
     def test_create_duplicate_courier(self, api_client: APIClient, registered_courier):
 
         response = api_client.create_courier(registered_courier)
@@ -22,6 +30,8 @@ class TestCreateCourier:
         assert response.status_code == 409
         assert "message" in response.json()
 
+    @allure.title("Ошибка при отсутствии обязательного поля")
+    @allure.description("Проверка, что без login или password курьер не создаётся")
     @pytest.mark.parametrize("missing_field", ["login", "password"])
     def test_create_courier_missing_required_field(self, api_client: APIClient, generate_random_string, missing_field):
         payload = {
